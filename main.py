@@ -16,9 +16,10 @@ import humanize
 
 def main() -> None:
     (display, font, image, draw) = setup()
-    conf = load_config()
-    diff = calculated_time(conf)
-    display_diff(display, font, image, draw, conf, diff)
+    while True:
+        conf = load_config()
+        diff = calculated_time(conf)
+        display_diff(display, font, image, draw, conf, diff)
 
 
 def setup():
@@ -39,7 +40,6 @@ def load_config() -> MutableMapping[str, Any]:
     )
     with open(config_location) as config_file:
         config = toml.load(config_file)
-        logger.success("Loaded config")
         return config
 
 
@@ -49,6 +49,7 @@ def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
 
 
 def display_diff(display, font, image, draw, conf, diff):
+    draw.rectangle((0, 0, display.width, display.height), fill=0)
     draw.text(
         (0, 0),
         conf["event"] + " on " + humanize.naturaldate(conf["date"]),
@@ -56,10 +57,9 @@ def display_diff(display, font, image, draw, conf, diff):
         fill=255,
     )
     draw.rectangle((0, 13, display.width, 13), outline=255, fill=255)
-    draw.text((0, 13), str(diff), font=font, fill=255)
+    draw.text((0, 13), str(diff)[:-4], font=font, fill=255)
     display.image(image)
     display.show()
-    time.sleep(2)
 
 
 if __name__ == "__main__":
