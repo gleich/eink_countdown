@@ -6,7 +6,7 @@ After=syslog.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/python3 main.py
-WorkingDirectory=/home/pi/oled_countdown/
+WorkingDirectory=/home/pi/eink_countdown/
 Restart=always
 RestartSec=5
 KillMode=process

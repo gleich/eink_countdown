@@ -57,7 +57,7 @@ def setup():
 
 def load_config() -> MutableMapping[str, Any]:
     config_location = os.path.join(
-        Path.home(), ".config", "oled_countdown", "config.toml"
+        Path.home(), ".config", "eink_countdown", "config.toml"
     )
     with open(config_location) as config_file:
         config = toml.load(config_file)
