@@ -34,4 +34,7 @@ def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
     scheduler.add_job(main, "interval", hours=1)
-    scheduler.start()
+    try:
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        pass
