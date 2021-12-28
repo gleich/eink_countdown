@@ -4,34 +4,55 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, MutableMapping
 
-import adafruit_ssd1305
+from adafruit_epd.ssd1680 import Adafruit_SSD1680
+from adafruit_epd.epd import Adafruit_EPD
 import busio
 import digitalio
 import toml
-from board import D4, SCL, SDA
+import board
 from loguru import logger
 from PIL import Image, ImageDraw, ImageFont
 import humanize
 
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
 
 def main() -> None:
-    (display, font, image, draw) = setup()
+    (display, image, draw) = setup()
+    regular_font = ImageFont.truetype("./fonts/SpaceMono-Regular.ttf", 20)
+    italic_font = ImageFont.truetype("./fonts/SpaceMono-Italic.ttf", 20)
     while True:
         conf = load_config()
         diff = calculated_time(conf)
-        display_diff(display, font, image, draw, conf, diff)
+        display_diff(display, regular_font, italic_font, image, draw, conf, diff)
+        time.sleep(600)  # 10 minutes
 
 
 def setup():
-    i2c = busio.I2C(SCL, SDA)
-    display = adafruit_ssd1305.SSD1305_I2C(
-        128, 32, i2c, addr=0x3C, reset=digitalio.DigitalInOut(D4)
+    spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+    ecs = digitalio.DigitalInOut(board.CE0)
+    dc = digitalio.DigitalInOut(board.D22)
+    rst = digitalio.DigitalInOut(board.D27)
+    busy = digitalio.DigitalInOut(board.D17)
+    display = Adafruit_SSD1680(  # Newer eInk Bonnet
+        122,
+        250,
+        spi,
+        cs_pin=ecs,
+        dc_pin=dc,
+        sramcs_pin=None,
+        rst_pin=rst,
+        busy_pin=busy,
     )
-    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 10)
-    image = Image.new("1", (display.width, display.height))
+    display.rotation = 1
+    display.power_up()
+    display.fill(Adafruit_EPD.WHITE)
+
+    image = Image.new("RGB", (display.width, display.height), color=WHITE)
     draw = ImageDraw.Draw(image)
-    logger.success("Setup display and loaded font")
-    return (display, font, image, draw)
+    logger.success("Setup display")
+    return (display, image, draw)
 
 
 def load_config() -> MutableMapping[str, Any]:
@@ -48,18 +69,24 @@ def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
     return datetime.combine(config["date"], datetime.min.time()) - now
 
 
-def display_diff(display, font, image, draw, conf, diff):
-    draw.rectangle((0, 0, display.width, display.height), fill=0)
+def display_diff(display, regular_font, italic_font, image, draw, conf, diff) -> None:
+    draw.rectangle((0, 0, display.width, display.height), fill=WHITE)
     draw.text(
         (0, 0),
-        conf["event"] + " on " + humanize.naturaldate(conf["date"]),
-        font=font,
-        fill=255,
+        conf["event"],
+        font=italic_font,
+        fill=BLACK,
     )
-    draw.rectangle((0, 13, display.width, 13), outline=255, fill=255)
-    draw.text((0, 13), str(diff)[:-4], font=font, fill=255)
+    draw.rectangle((0, 26, display.width, 31), outline=BLACK, fill=BLACK)
+    draw.text(
+        (0, 28),
+        humanize.naturaldelta(diff) + " till " + humanize.naturaldate(conf["date"]),
+        font=regular_font,
+        fill=BLACK,
+    )
     display.image(image)
-    display.show()
+    display.display()
+    logger.success("Updated display")
 
 
 if __name__ == "__main__":
