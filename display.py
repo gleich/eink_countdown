@@ -54,14 +54,14 @@ def show_diff(display, image, draw, conf, diff) -> None:
     draw.text(
         (0, 28),
         "{} and {} hours\ntill {}".format(
-            humanize.naturaldelta(diff), 10, conf["date"]
+            humanize.naturaldelta(diff), (diff.seconds // 3600) + 1, conf["date"]
         ),
         font=REGULAR_FONT,
         fill=BLACK,
     )
     draw.text(
         (0, 105),
-        "Last updated at " + datetime.now().strftime("%-I:%-M:%-S %p"),
+        "Updated " + datetime.now().strftime("%-m/%-d//%-y at %-I:%-M %p"),
         font=SMALL_FONT,
         fill=BLACK,
     )

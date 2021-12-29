@@ -32,6 +32,7 @@ def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
 
 
 if __name__ == "__main__":
+    main()
     scheduler = BlockingScheduler()
     scheduler.add_job(main, "interval", hours=1)
     try:
