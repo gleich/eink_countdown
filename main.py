@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, MutableMapping
@@ -32,6 +33,7 @@ def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
 
 
 if __name__ == "__main__":
+    time.sleep(20)
     main()
     scheduler = BlockingScheduler()
     scheduler.add_job(main, "interval", hours=1)

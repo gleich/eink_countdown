@@ -53,7 +53,7 @@ def show_diff(display, image, draw, conf, diff) -> None:
     draw.rectangle((0, 26, display.width, 31), outline=BLACK, fill=BLACK)
     draw.text(
         (0, 28),
-        "{} and {} hours\ntill {}".format(
+        "{} and {} hours\nuntill {}".format(
             humanize.naturaldelta(diff), (diff.seconds // 3600) + 1, conf["date"]
         ),
         font=REGULAR_FONT,
@@ -61,7 +61,7 @@ def show_diff(display, image, draw, conf, diff) -> None:
     )
     draw.text(
         (0, 105),
-        "Updated " + datetime.now().strftime("%-m/%-d//%-y at %-I:%-M %p"),
+        "Updated " + datetime.now().strftime("%-m/%-d/%-y at %-I:%M %p"),
         font=SMALL_FONT,
         fill=BLACK,
     )
