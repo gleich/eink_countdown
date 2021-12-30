@@ -10,8 +10,10 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import display
 
 (DISPLAY, IMAGE, DRAW) = display.setup()
+scheduler = BlockingScheduler()
 
 
+@scheduler.scheduled_job("cron", minute=0)
 def main() -> None:
     conf = load_config()
     diff = calculated_time(conf)
@@ -35,8 +37,6 @@ def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
 if __name__ == "__main__":
     time.sleep(20)
     main()
-    scheduler = BlockingScheduler()
-    scheduler.add_job(main, "interval", hours=1)
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
