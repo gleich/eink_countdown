@@ -16,7 +16,7 @@ scheduler = BlockingScheduler()
 @scheduler.scheduled_job("cron", minute=0)
 def main() -> None:
     conf = load_config()
-    diff = calculated_time(conf)
+    diff = calculate_time(conf)
     display.show_diff(DISPLAY, IMAGE, DRAW, conf, diff)
 
 
@@ -29,7 +29,7 @@ def load_config() -> MutableMapping[str, Any]:
         return config
 
 
-def calculated_time(config: MutableMapping[str, Any]) -> timedelta:
+def calculate_time(config: MutableMapping[str, Any]) -> timedelta:
     now = datetime.now()
     return datetime.combine(config["date"], datetime.min.time()) - now
 
