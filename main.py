@@ -2,7 +2,7 @@ import os
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, MutableMapping
+from typing import Any, MutableMapping, Tuple
 
 import toml
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -16,8 +16,8 @@ scheduler = BlockingScheduler()
 @scheduler.scheduled_job("cron", minute=0)
 def main() -> None:
     conf = load_config()
-    diff = calculate_time(conf)
-    display.show_diff(DISPLAY, IMAGE, DRAW, conf, diff)
+    (diff, verbage) = calculate_time(conf)
+    display.show_diff(DISPLAY, IMAGE, DRAW, conf, diff, verbage)
 
 
 def load_config() -> MutableMapping[str, Any]:
@@ -29,9 +29,13 @@ def load_config() -> MutableMapping[str, Any]:
         return config
 
 
-def calculate_time(config: MutableMapping[str, Any]) -> timedelta:
+def calculate_time(config: MutableMapping[str, Any]) -> Tuple[timedelta, str]:
     now = datetime.now()
-    return datetime.combine(config["date"], datetime.min.time()) - now
+    date = config["date"]
+    return (
+        datetime.combine(date, datetime.min.time()) - now,
+        "until" if now > date else "since",
+    )
 
 
 if __name__ == "__main__":

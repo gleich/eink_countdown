@@ -42,12 +42,12 @@ def setup():
     return (display, image, draw)
 
 
-def show_diff(display, image, draw, conf, diff) -> None:
+def show_diff(display, image, draw, conf, diff, verbage) -> None:
     main_countdown = humanize.naturaldelta(diff)
     if "days" in main_countdown:
-        main_countdown += f" {(diff.seconds // 3600)} hours\nuntil"
+        main_countdown += f" {(diff.seconds // 3600)} hours\n{verbage}"
     else:
-        main_countdown += " until\n"
+        main_countdown += f" {verbage}\n"
     draw.rectangle((0, 0, display.width, display.height), fill=WHITE)
     draw.text(
         (0, 0),
