@@ -32,7 +32,7 @@ def setup():
         rst_pin=rst,
         busy_pin=busy,
     )
-    display.rotation = 1
+    display.rotation = 3
     display.power_up()
     display.fill(Adafruit_EPD.WHITE)
 

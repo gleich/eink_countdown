@@ -31,10 +31,10 @@ def load_config() -> MutableMapping[str, Any]:
 
 def calculate_time(config: MutableMapping[str, Any]) -> Tuple[timedelta, str]:
     now = datetime.now()
-    date = config["date"]
+    date = datetime.combine(config["date"], datetime.min.time())
     return (
-        datetime.combine(date, datetime.min.time()) - now,
-        "until" if now > date else "since",
+        date,
+        "since" if now > date else "until",
     )
 
 
